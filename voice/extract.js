@@ -1,8 +1,9 @@
 #!/usr/bin/env node
+//find ~/Downloads/Takeout/Voice/Calls/ -iname '*thita*text*202*.html' | sort | head -n 1 | ./extract.js
 const fs = require('fs');
 const readline = require('readline');
 const htmlparser2 = require('htmlparser2');
-const DomHandler = require('domhandler');
+const {DomHandler} = require('domhandler');
 const domUtils = require('domutils');
 const CSSselect = require("css-select");
 
@@ -27,12 +28,13 @@ rl.on('line', (line) => {
 					console.error('Error parsing HTML:', error);
 					return;
 			}
-			CSSselect.selectAll('.', dom)
+			messagesElms = CSSselect.selectAll('.hfeed > .message', dom).map(mElm => {
+				console.log(domUtils.innerText(CSSselect.selectOne('.dt', mElm)));
+				console.log(domUtils.innerText(CSSselect.selectOne('.fn', mElm)));
+				console.log(domUtils.innerText(CSSselect.selectOne('q', mElm)));
+			});
 		}));
     parser.write(data);
     parser.end();
 	});
 });
-
-function extract(fileName) {
-}
