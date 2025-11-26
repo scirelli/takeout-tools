@@ -4,6 +4,7 @@ const readline = require('readline');
 const htmlparser2 = require('htmlparser2');
 const DomHandler = require('domhandler');
 const domUtils = require('domutils');
+const CSSselect = require("css-select");
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,32 +21,18 @@ rl.on('line', (line) => {
 			console.error('Error reading file:', err);
 			return;
 		}
-		console.log(data);
-		const handler = new DomHandler((error, dom) => {
+
+    const parser = new htmlparser2.Parser(new DomHandler((error, dom) => {
 			if (error) {
 					console.error('Error parsing HTML:', error);
-			} else {
-					console.log('HTML parsing complete. DOM available.');
-
-					const paragraphs = domUtils.findAll(element => element.tagName === 'p', dom);
-					paragraphs.forEach((p, index) => {
-							console.log(`Paragraph ${index + 1}:`, domUtils.getInnerHTML(p));
-					});
-
-					// Example: Find an element by ID
-					const specificElement = domUtils.findOne(element => element.attribs && element.attribs.id === 'my-id', dom);
-					if (specificElement) {
-							console.log('Content of element with ID "my-id":', domUtils.getInnerHTML(specificElement));
-					}
+					return;
 			}
-		});
-
-    const parser = new htmlparser2.Parser(handler);
-    parser.write(htmlContent);
+			CSSselect.selectAll('.', dom)
+		}));
+    parser.write(data);
     parser.end();
 	});
 });
 
 function extract(fileName) {
-	const dom = htmlparser2.parseDocument(htmlString);
 }
