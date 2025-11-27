@@ -6,14 +6,24 @@ const htmlparser2 = require('htmlparser2');
 const {DomHandler} = require('domhandler');
 const domUtils = require('domutils');
 const CSSselect = require("css-select");
+const { stringify } = require('csv-stringify');
 
 const rl = readline.createInterface({
   input: process.stdin,
 	terminal: true,
 });
+const stringifier = stringify({ header: true, columns: ['date', 'user', 'message'] })
 
 rl.on('close', () => {
   //process.exit(0);
+});
+
+stringifier.on('error', (err) => {
+  console.error(err.message);
+});
+
+stringifier.pipe(process.stdout).on('finish', () => {
+    console.log('Data successfully written to streamed_output.csv using piping.');
 });
 
 rl.on('line', (line) => {
@@ -29,10 +39,12 @@ rl.on('line', (line) => {
 					return;
 			}
 			messagesElms = CSSselect.selectAll('.hfeed > .message', dom).map(mElm => {
-				console.log(domUtils.innerText(CSSselect.selectOne('.dt', mElm)));
-				console.log(domUtils.innerText(CSSselect.selectOne('.fn', mElm)));
-				console.log(domUtils.innerText(CSSselect.selectOne('q', mElm)));
-			});
+				stringifier.write([
+					domUtils.innerText(CSSselect.selectOne('.dt', mElm)).replaceAll(/[\n\r]+/g, ' '),
+					domUtils.innerText(CSSselect.selectOne('.fn', mElm)).replaceAll(/[\n\r]+/g, ' '),
+					domUtils.innerText(CSSselect.selectOne('q', mElm)).replaceAll(/[\n\r]+/g, ' '),
+				]);
+			})
 		}));
     parser.write(data);
     parser.end();
