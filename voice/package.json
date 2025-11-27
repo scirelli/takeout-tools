@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "css-select": "^6.0.0",
+    "csv-parse": "^6.1.0",
     "csv-stringify": "^6.6.0",
     "domhandler": "^5.0.3",
     "htmlparser2": "^10.0.0"
