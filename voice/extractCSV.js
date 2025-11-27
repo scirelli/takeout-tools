@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 //find ~/Downloads/Takeout/Voice/Calls/ -iname '*thita*text*202*.html' | sort | head -n 1 | ./extract.js
 const fs = require('fs');
-const {readFile} = require('fs').promises;
 const readline = require('readline');
 const htmlparser2 = require('htmlparser2');
 const {DomHandler} = require('domhandler');
@@ -27,15 +26,12 @@ const parser = new htmlparser2.Parser(new DomHandler((error, dom) => {
 		]);
 	})
 }));
-const fileReads = [];
 
 
 rl.on('close', () => {
-	Promise.allSettled(fileReads).then(()=> {
-		parser.end();
-		stringifier.end();
-		process.exit(0);
-	});
+	parser.end();
+	stringifier.end();
+	process.exit(0);
 });
 
 stringifier.on('error', (err) => {
@@ -45,7 +41,5 @@ stringifier.on('error', (err) => {
 stringifier.pipe(process.stdout).on('finish', () => {});
 
 rl.on('line', (line) => {
-	fileReads.push(readFile(line, 'utf8').then(data => {
-    parser.write(data);
-	}));
+	parser.write(fs.readFileSync(line, { encoding: 'utf8', flag: 'r' }));
 });
