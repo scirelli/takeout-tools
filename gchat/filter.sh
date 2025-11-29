@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-email="$1"
+takeoutPath="$1"
+email="$2"
 
-find /tmp/Takeout/Google\ Chat/ \
+find "$takeoutPath" \
     -iname '*messages.json' \
     -type f \
     -exec grep -l "$email" {} \; \
