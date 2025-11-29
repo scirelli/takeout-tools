@@ -6,5 +6,5 @@ Extracts gChat conversation into a csv file.
 
 ## Usage
 ```
-./filter.sh './Takeout/Google Chat' <email address>
+./filter.sh <path to google chat messages> <email address>
 ```
