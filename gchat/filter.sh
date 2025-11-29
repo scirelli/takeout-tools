@@ -1,3 +1,10 @@
-#/usr/bin/env bash
-grep -ri 'thitaporn.jenly@gmail.com' . | uniq | cut -d':' -f 1 | grep 'messages' | uniq
-jq '.messages[].text' './Groups/DM 7Nf1rgAAAAE/messages.json'
+#!/usr/bin/env bash
+set -euo pipefail
+
+email="$1"
+
+find /tmp/Takeout/Google\ Chat/ \
+    -iname '*messages.json' \
+    -type f \
+    -exec grep -l "$email" {} \; \
+| xargs -I {} jq -r '.messages[] | [.created_date, .creator.name, .text] | @csv' '{}'
